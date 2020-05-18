@@ -6,16 +6,33 @@ import { ScrollView } from 'react-native-gesture-handler';
 import { MonoText } from '../components/StyledText';
 import { TextInput } from 'react-native';
 
-export default function HomeScreen() {
+import { MatchesScreen } from './MatchesScreen.js';
+import { StackActions, StackNavigator } from '@react-navigation/native';
+
+export default function HomeScreen({ navigation }) {
   return (
     <View style={styles.container}>
+
       <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
+        <View>
+          <UserInput placeholder="Username" />
+          <UserInput placeholder='Password' />
 
-        <UserInput placeholder="Username" />
-        <UserInput placeholder='Password' />
+          <Button title="Log In" onPress={() => {
+            navigation.navigate("Matches")
+          }} />
+          <br />
+          <br />
+        </View>
 
-        <Button title="Log In" onPress={() => Alert.alert("Pop off")} />
+        <View>
+          <Text>
+            New to RoomCru?
+        </Text>
+          <Button title="Sign up" />
+        </View>
       </ScrollView>
+
     </View>
   );
 }
