@@ -19,7 +19,7 @@ export default function HomeScreen({ navigation }) {
           <UserInput placeholder='Password' />
 
           <Button title="Log In" onPress={() => {
-            navigation.navigate("Matches")
+            navigation.navigate("Root")
           }} />
           <br />
           <br />

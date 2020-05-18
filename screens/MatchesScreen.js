@@ -1,5 +1,14 @@
 import * as React from 'react';
 import { Image, Platform, StyleSheet, Text, TouchableOpacity, View, Button, Alert } from 'react-native';
+import BottomTabNavigator from '../navigation/BottomTabNavigator.js';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+
+import ProfileScreen from './ProfileScreen.js';
+import { NavigationContainer } from '@react-navigation/native';
+
+import { LinkingTabsConfig } from '../navigation/LinkingTabsConfig.js';
+
+const Tab = createBottomTabNavigator();
 
 export default function MatchesScreen({ navigation }) {
     return (
@@ -8,6 +17,15 @@ export default function MatchesScreen({ navigation }) {
         </View>
     );
 };
+
+function MyTabs() {
+    return (
+        <Tab.Navigator>
+            <Tab.Screen name="Matches" component={MatchesScreen} />
+            <Tab.Screen name="Profile" component={ProfileScreen} />
+        </Tab.Navigator>
+    );
+}
 
 const styles = StyleSheet.create({
     container: {

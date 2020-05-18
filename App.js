@@ -8,6 +8,7 @@ import { Platform, StatusBar, StyleSheet, View } from 'react-native';
 import useCachedResources from './hooks/useCachedResources';
 import BottomTabNavigator from './navigation/BottomTabNavigator';
 import LinkingConfiguration from './navigation/LinkingConfiguration';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 
 import HomeScreen from './screens/HomeScreen.js';
 import Matches from './screens/MatchesScreen.js';
@@ -15,6 +16,16 @@ import Profile from './screens/ProfileScreen.js';
 import Messages from './screens/MessageScreen.js';
 
 const Stack = createStackNavigator();
+const Tab = createBottomTabNavigator();
+
+function Root() {
+  return (
+    <Tab.Navigator>
+      <Tab.Screen name="Matches" component={Matches} />
+      <Tab.Screen name="Profile" component={Profile} />
+    </Tab.Navigator>
+  );
+}
 
 export default function App(props) {
 
@@ -38,10 +49,8 @@ export default function App(props) {
 function MyStack() {
   return (
     <Stack.Navigator initialRouteName="Login">
+      <Stack.Screen name="Root" component={Root} />
       <Stack.Screen name="Login" component={HomeScreen} />
-      <Stack.Screen name="Matches" component={Matches} />
-      <Stack.Screen name="Profile" component={Profile} />
-      <Stack.Screen name="Messages" component={Messages} />
     </Stack.Navigator>
   )
 }
