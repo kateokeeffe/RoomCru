@@ -2,15 +2,70 @@ import * as React from 'react';
 import { Image, Platform, StyleSheet, Text, TouchableOpacity, View, Button, Alert } from 'react-native';
 import BottomTabNavigator from '../navigation/BottomTabNavigator.js';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { TextInput } from 'react-native';
+import { useNavigation } from '@react-navigation/core';
 
-export default function ProfileScreen() {
+function DefaultView() {
     return (
         <View style={styles.container}>
             <Text>Welcome! This will be the profile screen.</Text>
+
+            <Text id="name">Name</Text>
+            <Text id="photo">Photo</Text>
+            <Text id="school">School</Text>
+            <Text id="age">Age</Text>
+            <Text id="class_year">Class year</Text>
+            <Text id="location">location</Text>
+            <Text id="prompt1">prompt1</Text>
+            <Text id="prompt2">prompt2</Text>
+            <Text id="prompt3">prompt3</Text>
+        </View>
+    );
+}
+
+function ProfileView(props) {
+    const isEditScreen = props.edit_screen;
+    if (isEditScreen !== 1) {
+        return (
+            <DefaultView />
+        );
+    } else if (isEditScreen === 1) {
+        return (
+            <EditProfileView />
+        );
+    }
+}
+
+export default function ProfileScreen({ route, navigation }) {
+    var view = 0;
+    if (route.params !== undefined) {
+        view = 1;
+    }
+    console.log(view);
+    return (
+        <View>
+            <Button title="Edit Profile" onPress={() => {
+                navigation.navigate("Edit Profile")
+            }} />
+            <ProfileView edit_screen={view} />
         </View>
     );
 };
 
+
+function UserInput(props) {
+    //const [value, onChangeText] = React.useState('Username');
+
+    const [value, onChangeText] = React.useState(props.placeholder);
+
+    return (
+        <TextInput {...props}
+            style={{ height: 40, borderColor: 'gray', borderWidth: 1 }}
+            onChangeText={text => onChangeText(text)}
+            value={value}
+        />
+    );
+}
 
 const styles = StyleSheet.create({
     container: {

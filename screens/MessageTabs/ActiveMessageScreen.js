@@ -1,25 +1,10 @@
 import * as React from 'react';
 import { Image, Platform, StyleSheet, Text, TouchableOpacity, View, Button, Alert } from 'react-native';
 
-import ProfileScreen from './ProfileScreen.js';
-import { NavigationContainer } from '@react-navigation/native';
-
-import { LinkingTabsConfig } from '../navigation/LinkingTabsConfig.js';
-
-export default function MatchesScreen({ navigation }) {
+export default function ActiveMessageScreen() {
     return (
         <View style={styles.container}>
-            <Text>Welcome! This will be the matches screen.</Text>
-            <View>
-                <Text>Please fill out the</Text>
-                <br />
-                <Button title="Compatibility questionnaire" onPress={() => {
-                    navigation.navigate("Survey")
-                }} />
-                <br />
-                <Text>so we can vet your potential matches</Text>
-
-            </View>
+            <Text>Welcome! This will be the ACTIVE message screen.</Text>
         </View>
     );
 };

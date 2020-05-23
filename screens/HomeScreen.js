@@ -29,7 +29,9 @@ export default function HomeScreen({ navigation }) {
           <Text>
             New to RoomCru?
         </Text>
-          <Button title="Sign up" />
+          <Button title="Sign up" onPress={() => {
+            navigation.navigate("SignUp")
+          }} />
         </View>
       </ScrollView>
 
@@ -65,7 +67,6 @@ function DevelopmentModeNotice() {
 }
 
 function UserInput(props) {
-  //const [value, onChangeText] = React.useState('Username');
 
   const [value, onChangeText] = React.useState(props.placeholder);
 

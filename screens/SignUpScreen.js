@@ -1,28 +1,49 @@
 import * as React from 'react';
 import { Image, Platform, StyleSheet, Text, TouchableOpacity, View, Button, Alert } from 'react-native';
+import BottomTabNavigator from '../navigation/BottomTabNavigator.js';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { TextInput } from 'react-native';
 
 import ProfileScreen from './ProfileScreen.js';
 import { NavigationContainer } from '@react-navigation/native';
 
 import { LinkingTabsConfig } from '../navigation/LinkingTabsConfig.js';
 
+const Tab = createBottomTabNavigator();
+
 export default function MatchesScreen({ navigation }) {
     return (
         <View style={styles.container}>
-            <Text>Welcome! This will be the matches screen.</Text>
             <View>
-                <Text>Please fill out the</Text>
-                <br />
-                <Button title="Compatibility questionnaire" onPress={() => {
-                    navigation.navigate("Survey")
+                <UserInput placeholder='First Name' />
+                <UserInput placeholder='Last Name' />
+                <UserInput placeholder="Username" />
+                <UserInput placeholder='Password' />
+                <UserInput placeholder='Confirm Password' />
+
+                <Button title="Create account" onPress={() => {
+                    navigation.navigate("Root")
                 }} />
                 <br />
-                <Text>so we can vet your potential matches</Text>
-
+                <br />
             </View>
         </View>
     );
 };
+
+function UserInput(props) {
+    //const [value, onChangeText] = React.useState('Username');
+
+    const [value, onChangeText] = React.useState(props.placeholder);
+
+    return (
+        <TextInput {...props}
+            style={{ height: 40, borderColor: 'gray', borderWidth: 1 }}
+            onChangeText={text => onChangeText(text)}
+            value={value}
+        />
+    );
+}
 
 const styles = StyleSheet.create({
     container: {
