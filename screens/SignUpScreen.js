@@ -9,19 +9,27 @@ import { NavigationContainer } from '@react-navigation/native';
 
 import { LinkingTabsConfig } from '../navigation/LinkingTabsConfig.js';
 
+import * as firebase from "firebase";
+
 const Tab = createBottomTabNavigator();
 
 export default function MatchesScreen({ navigation }) {
     return (
         <View style={styles.container}>
             <View>
-                <UserInput placeholder='First Name' />
-                <UserInput placeholder='Last Name' />
-                <UserInput placeholder="Username" />
-                <UserInput placeholder='Password' />
-                <UserInput placeholder='Confirm Password' />
+                <UserInput id="firstName" placeholder='First Name' />
+                <UserInput id="lastName" placeholder='Last Name' />
+                <UserInput id="email" placeholder="Email" />
+                <UserInput id="password" placeholder='Password' />
+                <UserInput id="confirmPassword" placeholder='Confirm Password' />
 
                 <Button title="Create account" onPress={() => {
+                    firebase.auth().createUserWithEmailAndPassword(email, password).catch(function (error) {
+                        // Handle Errors here.
+                        var errorCode = error.code;
+                        var errorMessage = error.message;
+                        // ...
+                    });
                     navigation.navigate("Root")
                 }} />
                 <br />

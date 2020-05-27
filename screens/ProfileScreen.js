@@ -5,11 +5,14 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { TextInput } from 'react-native';
 import { useNavigation } from '@react-navigation/core';
 
-function DefaultView() {
+function DefaultView(props) {
+    const navigation = props.navigation;
     return (
         <View style={styles.container}>
             <Text>Welcome! This will be the profile screen.</Text>
-
+            <Button title="Edit Profile" onPress={() => {
+                navigation.navigate("Edit Profile")
+            }} />
             <Text id="name">Name</Text>
             <Text id="photo">Photo</Text>
             <Text id="school">School</Text>
@@ -23,38 +26,32 @@ function DefaultView() {
     );
 }
 
+function BuildProfileView(props) {
+    const navigation = props.navigation;
+    return (
+        <View>
+            <Button title="Build your profile" onPress={() => {
+                navigation.navigate("Build Your Profile")
+            }} />
+        </View>
+    );
+}
+
 function ProfileView(props) {
     const isEditScreen = props.edit_screen;
-    if (isEditScreen !== 1) {
+    const no_profile = props.no_profile;
+    if (isEditScreen !== 1 && no_profile === 1) {
         return (
-            <DefaultView />
+            <BuildProfileView navigation={props.navigation} />
         );
-    } else if (isEditScreen === 1) {
+    } else if (isEditScreen !== 1 && no_profile === 0) {
         return (
-            <EditProfileView />
+            <DefaultView navigation={props.navigation} />
         );
     }
 }
 
-export default function ProfileScreen({ route, navigation }) {
-    var view = 0;
-    if (route.params !== undefined) {
-        view = 1;
-    }
-    console.log(view);
-    return (
-        <View>
-            <Button title="Edit Profile" onPress={() => {
-                navigation.navigate("Edit Profile")
-            }} />
-            <ProfileView edit_screen={view} />
-        </View>
-    );
-};
-
-
 function UserInput(props) {
-    //const [value, onChangeText] = React.useState('Username');
 
     const [value, onChangeText] = React.useState(props.placeholder);
 
@@ -66,6 +63,15 @@ function UserInput(props) {
         />
     );
 }
+
+export default function ProfileScreen({ route, navigation }) {
+
+    return (
+        <View>
+            <ProfileView navigation={navigation} edit_profile={0} no_profile={1} />
+        </View>
+    );
+};
 
 const styles = StyleSheet.create({
     container: {

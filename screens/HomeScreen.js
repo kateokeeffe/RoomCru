@@ -7,15 +7,39 @@ import { MonoText } from '../components/StyledText';
 import { TextInput } from 'react-native';
 
 import { MatchesScreen } from './MatchesScreen.js';
-import { StackActions, StackNavigator } from '@react-navigation/native';
+import { StackActions, StackNavigator, withNavigation } from '@react-navigation/native';
+
+import * as firebase from "firebase";
 
 export default function HomeScreen({ navigation }) {
+
+  var user = firebase.auth().currentUser;
+
+  if (user) {
+    // User is signed in.
+    navigation.navigate("Root");
+  } else {
+    // No user is signed in.
+    navigation.navigate("Login");
+  }
+
+  firebase.auth().onAuthStateChanged(function (user) {
+    if (user) {
+      // User is signed in.
+      navigation.navigate("Root");
+    } else {
+      // No user is signed in.
+      navigation.navigate("Login");
+    }
+  });
+
+
   return (
     <View style={styles.container}>
 
       <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
         <View>
-          <UserInput placeholder="Username" />
+          <UserInput textContentType="email" placeholder="Email" />
           <UserInput placeholder='Password' />
 
           <Button title="Log In" onPress={() => {

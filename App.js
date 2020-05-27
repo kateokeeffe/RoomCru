@@ -20,6 +20,12 @@ import ActiveMessages from './screens/MessageTabs/ActiveMessageScreen.js';
 import NewMessages from './screens/MessageTabs/NewMessageScreen.js';
 import Survey from './screens/SurveyScreen.js';
 import EditScreen from './screens/EditProfileScreen';
+import BuildProfileScreen from './screens/BuildProfileScreen';
+
+import * as firebase from "firebase";
+import "firebase/analytics";
+import "firebase/auth";
+import "firebase/firestore";
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -50,6 +56,7 @@ function Profile_Tab() {
     <ProfileStack.Navigator >
       <ProfileStack.Screen name="Profile" component={Profile} />
       <ProfileStack.Screen name="Edit Profile" component={EditScreen} />
+      <ProfileStack.Screen name="Build Your Profile" component={BuildProfileScreen} />
     </ProfileStack.Navigator >
   );
 }
@@ -74,7 +81,23 @@ function MyStack() {
   )
 }
 
-export default function App(props) {
+export default function App({ navigation }) {
+
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyDKDEilnSWOQdCEvpuGM2pSZ_e94P_qkH0",
+    authDomain: "roomcru-2bd45.firebaseapp.com",
+    databaseURL: "https://roomcru-2bd45.firebaseio.com",
+    projectId: "roomcru-2bd45",
+    storageBucket: "roomcru-2bd45.appspot.com",
+    messagingSenderId: "203985573677",
+    appId: "1:203985573677:web:a91f5e8cda6914f55865a4",
+    measurementId: "G-DEJK676FV9"
+  };
+  if (!firebase.apps.length) {
+    firebase.initializeApp(firebaseConfig);
+  }
+  firebase.analytics();
 
 
   const isLoadingComplete = useCachedResources();

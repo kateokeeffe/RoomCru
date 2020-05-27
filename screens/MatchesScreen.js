@@ -5,8 +5,29 @@ import ProfileScreen from './ProfileScreen.js';
 import { NavigationContainer } from '@react-navigation/native';
 
 import { LinkingTabsConfig } from '../navigation/LinkingTabsConfig.js';
+import * as firebase from "firebase";
 
 export default function MatchesScreen({ navigation }) {
+
+    var user = firebase.auth().currentUser;
+
+    if (user) {
+        // User is signed in.
+        navigation.navigate("Root");
+    } else {
+        // No user is signed in.
+        navigation.navigate("Login");
+    }
+
+    firebase.auth().onAuthStateChanged(function (user) {
+        if (user) {
+            // User is signed in.
+            navigation.navigate("Root");
+        } else {
+            // No user is signed in.
+            navigation.navigate("Login");
+        }
+    });
     return (
         <View style={styles.container}>
             <Text>Welcome! This will be the matches screen.</Text>

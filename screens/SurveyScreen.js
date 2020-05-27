@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { Image, Platform, StyleSheet, Text, TouchableOpacity, View, Button, Alert, Switch } from 'react-native';
 import { useState, useEffect } from 'react';
-import CheckboxGroup from 'react-native-checkbox-group'
+import CheckboxGroup from 'react-native-checkbox-group';
 import { ScrollView } from 'react-native-gesture-handler';
 
 import ProfileScreen from './ProfileScreen.js';
@@ -72,7 +72,7 @@ function MyCheckBoxGroup(props) {
     );
 }
 
-export default function SurveyScreen(props, { navigation }) {
+export default function SurveyScreen({ navigation }) {
 
     return (
         <View style={styles.container}>
@@ -106,7 +106,7 @@ export default function SurveyScreen(props, { navigation }) {
 
                 <br />
                 <Button title="Submit" onPress={() => {
-                    navigation.navigate("Matches")
+                    navigation.navigate("Match")
                 }} />
                 <br />
             </ScrollView>
