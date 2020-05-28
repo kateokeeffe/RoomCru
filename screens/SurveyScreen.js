@@ -7,6 +7,7 @@ import { ScrollView } from 'react-native-gesture-handler';
 import ProfileScreen from './ProfileScreen.js';
 
 import Slider from '@react-native-community/slider';
+import * as firebase from "firebase";
 
 function MySlider(props) {
 
@@ -73,6 +74,26 @@ function MyCheckBoxGroup(props) {
 }
 
 export default function SurveyScreen({ navigation }) {
+
+    var user = firebase.auth().currentUser;
+
+    if (user) {
+        // User is signed in.
+        navigation.navigate("Root");
+    } else {
+        // No user is signed in.
+        navigation.navigate("Login");
+    }
+
+    firebase.auth().onAuthStateChanged(function (user) {
+        if (user) {
+            // User is signed in.
+            navigation.navigate("Root");
+        } else {
+            // No user is signed in.
+            navigation.navigate("Login");
+        }
+    });
 
     return (
         <View style={styles.container}>

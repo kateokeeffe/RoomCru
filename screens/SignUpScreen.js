@@ -8,12 +8,14 @@ import ProfileScreen from './ProfileScreen.js';
 import { NavigationContainer } from '@react-navigation/native';
 
 import { LinkingTabsConfig } from '../navigation/LinkingTabsConfig.js';
+import { useState, useEffect } from 'react';
 
 import * as firebase from "firebase";
 
 const Tab = createBottomTabNavigator();
 
-export default function MatchesScreen({ navigation }) {
+export default function SignUpScreen({ navigation }) {
+
     return (
         <View style={styles.container}>
             <View>
@@ -24,12 +26,21 @@ export default function MatchesScreen({ navigation }) {
                 <UserInput id="confirmPassword" placeholder='Confirm Password' />
 
                 <Button title="Create account" onPress={() => {
-                    firebase.auth().createUserWithEmailAndPassword(email, password).catch(function (error) {
-                        // Handle Errors here.
-                        var errorCode = error.code;
-                        var errorMessage = error.message;
-                        // ...
-                    });
+                    var firstName = document.getElementById("firstName").value;
+                    var lastName = document.getElementById("lastName").value;
+                    var email = document.getElementById("email").value;
+                    console.log(email);
+                    var password = document.getElementById("password").value;
+                    var confirmpassword = document.getElementById("confirmPassword").value;
+                    if (password !== confirmpassword) {
+                        alert("Passwords do not match.");
+                        console.log("warning- do not match");
+                        return;
+                    }
+
+                    handleCreateUser(email, password, firstName, lastName);
+
+                    console.log(firstName);
                     navigation.navigate("Root")
                 }} />
                 <br />
@@ -39,16 +50,38 @@ export default function MatchesScreen({ navigation }) {
     );
 };
 
-function UserInput(props) {
-    //const [value, onChangeText] = React.useState('Username');
+function handleCreateUser(email, password, firstName, lastName) {
+    firebase.auth().createUserWithEmailAndPassword(email, password)
+        .then(function (user) {
+            // set other info (first name, last name)
+            firebase.database().ref('users/' + user.uid).update({
+                firstname: firstName,
+                lastname: lastName
+            }).catch(function (error) {
+                // Handle Errors here.
+                var errorCode = error.code;
+                var errorMessage = error.message;
+                if (errorCode == 'auth/weak-password') {
+                    alert('The password is too weak.');
+                } else {
+                    alert(errorMessage);
+                }
+                console.log(error);
+                return;
+            });
+        });
+    //alert("Congrats! You have created your account");
+}
 
-    const [value, onChangeText] = React.useState(props.placeholder);
+function UserInput(props) {
+
+    const [val, onChangeText] = React.useState("");
 
     return (
         <TextInput {...props}
             style={{ height: 40, borderColor: 'gray', borderWidth: 1 }}
-            onChangeText={text => onChangeText(text)}
-            value={value}
+            onChangeText={(text) => onChangeText(text)}
+            value={val}
         />
     );
 }

@@ -2,8 +2,30 @@ import * as React from 'react';
 import { Image, Platform, StyleSheet, Text, TouchableOpacity, View, Button, Alert } from 'react-native';
 import BottomTabNavigator from '../navigation/BottomTabNavigator.js';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import * as firebase from "firebase";
 
 export default function MessageScreen() {
+
+    var user = firebase.auth().currentUser;
+
+    if (user) {
+        // User is signed in.
+        navigation.navigate("Root");
+    } else {
+        // No user is signed in.
+        navigation.navigate("Login");
+    }
+
+    firebase.auth().onAuthStateChanged(function (user) {
+        if (user) {
+            // User is signed in.
+            navigation.navigate("Root");
+        } else {
+            // No user is signed in.
+            navigation.navigate("Login");
+        }
+    });
+
     return (
         <View style={styles.container}>
             <Text>Welcome! This will be the message screen.</Text>

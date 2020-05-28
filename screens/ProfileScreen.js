@@ -4,6 +4,7 @@ import BottomTabNavigator from '../navigation/BottomTabNavigator.js';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { TextInput } from 'react-native';
 import { useNavigation } from '@react-navigation/core';
+import * as firebase from "firebase";
 
 function DefaultView(props) {
     const navigation = props.navigation;
@@ -65,6 +66,26 @@ function UserInput(props) {
 }
 
 export default function ProfileScreen({ route, navigation }) {
+
+    var user = firebase.auth().currentUser;
+
+    if (user) {
+        // User is signed in.
+        navigation.navigate("Root");
+    } else {
+        // No user is signed in.
+        navigation.navigate("Login");
+    }
+
+    firebase.auth().onAuthStateChanged(function (user) {
+        if (user) {
+            // User is signed in.
+            navigation.navigate("Root");
+        } else {
+            // No user is signed in.
+            navigation.navigate("Login");
+        }
+    });
 
     return (
         <View>

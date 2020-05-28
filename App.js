@@ -10,6 +10,7 @@ import BottomTabNavigator from './navigation/BottomTabNavigator';
 import LinkingConfiguration from './navigation/LinkingConfiguration';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
+import { createDrawerNavigator } from '@react-navigation/drawer';
 
 import HomeScreen from './screens/HomeScreen.js';
 import MatchesScreen from './screens/MatchesScreen.js';
@@ -26,12 +27,14 @@ import * as firebase from "firebase";
 import "firebase/analytics";
 import "firebase/auth";
 import "firebase/firestore";
+import { Button } from 'react-native-elements';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
 const MessageTabs = createMaterialTopTabNavigator();
 const MatchStack = createStackNavigator();
 const ProfileStack = createStackNavigator();
+const DrawerNav = createDrawerNavigator();
 
 function Matches() {
   return (
@@ -61,12 +64,35 @@ function Profile_Tab() {
   );
 }
 
+function Drawer() {
+  return (
+    <DrawerNav.Navigator>
+      <DrawerNav.Screen name="Home" component={HomeScreen} />
+    </DrawerNav.Navigator>
+  );
+}
+
+function LogOut() {
+  return (
+    <Button title="Log out" onPress={() =>
+      firebase.auth().signOut().then(function () {
+        // Sign-out successful.
+        console.log("user has signed out");
+      }).catch(function (error) {
+        // An error happened.
+        console.log("user could NOT be signed out");
+      })
+    } />
+  );
+}
+
 function Root() {
   return (
     <Tab.Navigator>
       <Tab.Screen name="Matches" component={Matches} />
       <Tab.Screen name="Profile" component={Profile_Tab} />
       <Tab.Screen name="Messages" component={Messages_Tab} />
+      <Tab.Screen name="Log Out" component={LogOut} />
     </Tab.Navigator>
   );
 }
