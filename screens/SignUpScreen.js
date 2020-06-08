@@ -12,33 +12,57 @@ import { useState, useEffect } from 'react';
 
 import * as firebase from "firebase";
 
-const Tab = createBottomTabNavigator();
-
 export default function SignUpScreen({ navigation }) {
+
+    const [firstName, setFirstName] = useState("");
+    const [lastName, setLastName] = useState("");
+    const [email, setEmail] = useState("");
+    const [pw, setPw] = useState("");
+    const [confirmPw, setConfirmPw] = useState("");
+
+    var userId = "";
+    firebase.auth().onAuthStateChanged(function (user) {
+        if (user) {
+            // User is signed in.
+            userId = user.uid;
+            console.log(userId);
+            if (firstName.length > 0) {
+                firebase.database().ref('users/' + userId).update({
+                    firstName: firstName,
+                    lastName: lastName,
+                    email: email,
+                    password: pw,
+                    has_profile: 0
+                });
+            }
+        } else {
+            // No user is signed in.
+            console.log("user obj is null");
+        }
+    });
+
 
     return (
         <View style={styles.container}>
             <View>
-                <UserInput id="firstName" placeholder='First Name' />
-                <UserInput id="lastName" placeholder='Last Name' />
-                <UserInput id="email" placeholder="Email" />
-                <UserInput id="password" placeholder='Password' />
-                <UserInput id="confirmPassword" placeholder='Confirm Password' />
+                <UserInput id="firstName" value={firstName} onChangeText={(text) => setFirstName(text)} placeholder='First Name' />
+                <UserInput id="lastName" value={lastName} onChangeText={(text) => setLastName(text)} placeholder='Last Name' />
+                <UserInput id="email" value={email} onChangeText={(text) => setEmail(text)} placeholder="Email" />
+                <UserInput id="password" value={pw} onChangeText={(text) => setPw(text)} placeholder='Password' />
+                <UserInput id="confirmPassword" value={confirmPw} onChangeText={(text) => setConfirmPw(text)} placeholder='Confirm Password' />
 
                 <Button title="Create account" onPress={() => {
-                    var firstName = document.getElementById("firstName").value;
-                    var lastName = document.getElementById("lastName").value;
-                    var email = document.getElementById("email").value;
+                    console.log(firstName);
+                    console.log(lastName);
                     console.log(email);
-                    var password = document.getElementById("password").value;
-                    var confirmpassword = document.getElementById("confirmPassword").value;
-                    if (password !== confirmpassword) {
+
+                    if (pw !== confirmPw) {
                         alert("Passwords do not match.");
                         console.log("warning- do not match");
                         return;
                     }
 
-                    handleCreateUser(email, password, firstName, lastName);
+                    handleCreateUser(email, pw, firstName, lastName);
 
                     console.log(firstName);
                     navigation.navigate("Root")
@@ -52,36 +76,26 @@ export default function SignUpScreen({ navigation }) {
 
 function handleCreateUser(email, password, firstName, lastName) {
     firebase.auth().createUserWithEmailAndPassword(email, password)
-        .then(function (user) {
-            // set other info (first name, last name)
-            firebase.database().ref('users/' + user.uid).update({
-                firstname: firstName,
-                lastname: lastName
-            }).catch(function (error) {
-                // Handle Errors here.
-                var errorCode = error.code;
-                var errorMessage = error.message;
-                if (errorCode == 'auth/weak-password') {
-                    alert('The password is too weak.');
-                } else {
-                    alert(errorMessage);
-                }
-                console.log(error);
-                return;
-            });
+        .catch(function (error) {
+            // Handle Errors here.
+            var errorCode = error.code;
+            var errorMessage = error.message;
+            if (errorCode == 'auth/weak-password') {
+                alert('The password is too weak.');
+            } else {
+                alert(errorMessage);
+            }
+            console.log(error);
+            return;
         });
     //alert("Congrats! You have created your account");
 }
 
 function UserInput(props) {
 
-    const [val, onChangeText] = React.useState("");
-
     return (
         <TextInput {...props}
             style={{ height: 40, borderColor: 'gray', borderWidth: 1 }}
-            onChangeText={(text) => onChangeText(text)}
-            value={val}
         />
     );
 }

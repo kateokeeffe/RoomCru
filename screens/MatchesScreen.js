@@ -7,38 +7,44 @@ import { NavigationContainer } from '@react-navigation/native';
 import { LinkingTabsConfig } from '../navigation/LinkingTabsConfig.js';
 import * as firebase from "firebase";
 
+async function getFirstName(setFirstName, uid) {
+    var firstname = "";
+    console.log("uid: " + uid);
+    var promise = await firebase.database().ref("users/" + uid).once('value').then(function (snapshot) {
+        console.log(snapshot.val());
+
+        setFirstName(snapshot.val()["firstName"]);
+    })
+}
+
 export default function MatchesScreen({ navigation }) {
 
-    var user = firebase.auth().currentUser;
-
-    if (user) {
-        // User is signed in.
-        navigation.navigate("Root");
-    } else {
-        // No user is signed in.
-        navigation.navigate("Login");
-    }
+    var userId = "";
+    const [firstname, setFirstName] = React.useState("");
 
     firebase.auth().onAuthStateChanged(function (user) {
         if (user) {
             // User is signed in.
-            navigation.navigate("Root");
+            userId = user.uid;
+            getFirstName(setFirstName, userId);
+            console.log(userId);
         } else {
             // No user is signed in.
-            navigation.navigate("Login");
+            console.log("user obj is null");
         }
     });
+
     return (
         <View style={styles.container}>
-            <Text>Welcome! This will be the matches screen.</Text>
+            <Text>Welcome {firstname}! This will be the matches screen.</Text>
             <View>
-                <Text>Please fill out the</Text>
-                <br />
+                <Text>Please fill out the{"\n"}</Text>
+
                 <Button title="Compatibility questionnaire" onPress={() => {
                     navigation.navigate("Survey")
                 }} />
-                <br />
-                <Text>so we can vet your potential matches</Text>
+
+                <Text>{"\n"}so we can vet your potential matches</Text>
 
             </View>
         </View>

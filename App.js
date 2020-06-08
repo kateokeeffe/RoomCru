@@ -23,8 +23,8 @@ import Survey from './screens/SurveyScreen.js';
 import EditScreen from './screens/EditProfileScreen';
 import BuildProfileScreen from './screens/BuildProfileScreen';
 
-import * as firebase from "firebase";
-import "firebase/analytics";
+import * as firebase from "firebase/app";
+//import "firebase/analytics";
 import "firebase/auth";
 import "firebase/firestore";
 import { Button } from 'react-native-elements';
@@ -123,7 +123,7 @@ export default function App({ navigation }) {
   if (!firebase.apps.length) {
     firebase.initializeApp(firebaseConfig);
   }
-  firebase.analytics();
+  //firebase.analytics();
 
 
   const isLoadingComplete = useCachedResources();

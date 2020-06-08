@@ -99,37 +99,37 @@ export default function SurveyScreen({ navigation }) {
         <View style={styles.container}>
             <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
                 <Text>Welcome! This will be the survey screen.</Text>
-                <br />
+                <Text>{"\n"}</Text>
                 <Text style={styles.title}>On a scale of 5: 1 is completely disagree and 5 is completely agree.</Text>
-                <br />
+                <Text>{"\n"}</Text>
                 <Text style={styles.title}>I am an early riser.</Text>
                 <MySlider id="slider1" />
-                <br />
+                <Text>{"\n"}</Text>
                 <Text style={styles.title}>I keep my room neat.</Text>
 
                 <MySlider id="slider2" />
-                <br />
+                <Text>{"\n"}</Text>
                 <Text style={styles.title}>I have friends over often.</Text>
 
                 <MySlider id="slider3" />
-                <br />
+                <Text>{"\n"}</Text>
                 <Text style={styles.title}>I want lights out and silence when I sleep.</Text>
 
                 <MySlider id="slider4" />
-                <br />
+                <Text>{"\n"}</Text>
                 <Text style={styles.title}>I have overnight guests regularly.</Text>
 
                 <MySlider id="slider5" />
-                <br />
+                <Text>{"\n"}</Text>
 
                 <Text>I am open to living with these genders (Pick at least one)</Text>
                 <MyCheckBoxGroup />
 
-                <br />
+                <Text>{"\n"}</Text>
                 <Button title="Submit" onPress={() => {
                     navigation.navigate("Match")
                 }} />
-                <br />
+                <Text>{"\n"}</Text>
             </ScrollView>
         </View>
     );

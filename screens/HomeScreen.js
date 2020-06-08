@@ -8,45 +8,59 @@ import { TextInput } from 'react-native';
 
 import { MatchesScreen } from './MatchesScreen.js';
 import { StackActions, StackNavigator, withNavigation } from '@react-navigation/native';
+import { useState, useEffect } from 'react';
 
 import * as firebase from "firebase";
+import { powderblue } from 'color-name';
+
+function handleSignInUser(email, pw) {
+  firebase.auth().signInWithEmailAndPassword(email, pw).catch(function (error) {
+    // Handle Errors here.
+    var errorCode = error.code;
+    var errorMessage = error.message;
+    console.log(errorCode);
+    console.log(errorMessage);
+    return;
+  });
+}
 
 export default function HomeScreen({ navigation }) {
 
-  var user = firebase.auth().currentUser;
+  var userId = "";
 
-  if (user) {
-    // User is signed in.
-    navigation.navigate("Root");
-  } else {
-    // No user is signed in.
-    navigation.navigate("Login");
-  }
+  const [email, setEmail] = useState("");
+  const [pw, setPw] = useState("");
 
   firebase.auth().onAuthStateChanged(function (user) {
     if (user) {
       // User is signed in.
-      navigation.navigate("Root");
+      userId = user.uid;
+      console.log(userId);
     } else {
       // No user is signed in.
-      navigation.navigate("Login");
+      console.log("user obj is null");
     }
   });
-
 
   return (
     <View style={styles.container}>
 
       <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
         <View>
-          <UserInput textContentType="email" placeholder="Email" />
-          <UserInput placeholder='Password' />
+          <UserInput value={email} id="email" onChangeText={text => setEmail(text)} placeholder="Email" />
+          <UserInput value={pw} id="pw" onChangeText={text => setPw(text)} placeholder='Password' />
 
           <Button title="Log In" onPress={() => {
+
+            handleSignInUser(email, pw);
+
             navigation.navigate("Root")
           }} />
-          <br />
-          <br />
+          <Text>
+            {"\n"}
+            {"\n"}
+          </Text>
+
         </View>
 
         <View>
@@ -92,13 +106,10 @@ function DevelopmentModeNotice() {
 
 function UserInput(props) {
 
-  const [value, onChangeText] = React.useState(props.placeholder);
 
   return (
     <TextInput {...props}
       style={{ height: 40, borderColor: 'gray', borderWidth: 1 }}
-      onChangeText={text => onChangeText(text)}
-      value={value}
     />
   );
 }

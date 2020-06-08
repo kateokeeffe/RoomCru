@@ -5,16 +5,18 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { TextInput } from 'react-native';
 import { useNavigation } from '@react-navigation/core';
 import * as firebase from "firebase";
+import { useState, useEffect } from 'react';
 
 function DefaultView(props) {
     const navigation = props.navigation;
+    const info = props.info;
     return (
         <View style={styles.container}>
             <Text>Welcome! This will be the profile screen.</Text>
             <Button title="Edit Profile" onPress={() => {
                 navigation.navigate("Edit Profile")
             }} />
-            <Text id="name">Name</Text>
+            <Text id="name">Name: {info[0]} {info[1]}</Text>
             <Text id="photo">Photo</Text>
             <Text id="school">School</Text>
             <Text id="age">Age</Text>
@@ -39,18 +41,60 @@ function BuildProfileView(props) {
 }
 
 function ProfileView(props) {
-    const isEditScreen = props.edit_screen;
-    const no_profile = props.no_profile;
-    if (isEditScreen !== 1 && no_profile === 1) {
+    const has_profile = props.has_profile;
+    if (has_profile === 0) {
         return (
             <BuildProfileView navigation={props.navigation} />
         );
-    } else if (isEditScreen !== 1 && no_profile === 0) {
+    } else {
         return (
-            <DefaultView navigation={props.navigation} />
+            <DefaultView navigation={props.navigation} info={props.info} />
         );
     }
 }
+
+
+async function getInfo(uid, setFirstName, setLastName, setEmail, setHasProfile) {
+    var promise = await firebase.database().ref("users/" + uid).once('value').then(function (snapshot) {
+        console.log(snapshot.val());
+        setFirstName(snapshot.val()["firstName"]);
+        setLastName(snapshot.val()["lastName"]);
+        setEmail(snapshot.val()["email"]);
+        setHasProfile(snapshot.val()["has_profile"]);
+    })
+}
+
+export default function ProfileScreen({ route, navigation }) {
+
+    var userId = "";
+    const [firstName, setFirstName] = useState("");
+    const [lastName, setLastName] = useState("");
+    const [email, setEmail] = useState("");
+    const [hasProfile, setHasProfile] = useState(0);
+
+    var info = [firstName, lastName, email, hasProfile];
+
+    firebase.auth().onAuthStateChanged(function (user) {
+        if (user) {
+            // User is signed in.
+            userId = user.uid;
+            getInfo(userId, setFirstName, setLastName, setEmail, setHasProfile);
+            if (hasProfile === 1) {
+                setHasProfile(1);
+            }
+        } else {
+            // No user is signed in.
+            navigation.navigate("Login");
+        }
+    });
+
+    return (
+        <View>
+            <ProfileView navigation={navigation} has_profile={hasProfile} info={info} />
+        </View>
+    );
+};
+
 
 function UserInput(props) {
 
@@ -64,35 +108,6 @@ function UserInput(props) {
         />
     );
 }
-
-export default function ProfileScreen({ route, navigation }) {
-
-    var user = firebase.auth().currentUser;
-
-    if (user) {
-        // User is signed in.
-        navigation.navigate("Root");
-    } else {
-        // No user is signed in.
-        navigation.navigate("Login");
-    }
-
-    firebase.auth().onAuthStateChanged(function (user) {
-        if (user) {
-            // User is signed in.
-            navigation.navigate("Root");
-        } else {
-            // No user is signed in.
-            navigation.navigate("Login");
-        }
-    });
-
-    return (
-        <View>
-            <ProfileView navigation={navigation} edit_profile={0} no_profile={1} />
-        </View>
-    );
-};
 
 const styles = StyleSheet.create({
     container: {
