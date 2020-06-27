@@ -4,74 +4,59 @@ import { FlatList } from 'react-native-gesture-handler';
 import { useState, useEffect } from 'react';
 import * as firebase from "firebase";
 
-async function getChatsAndMessages(userID, chats, setChats, messages, setMessages) {
-    var chatIDs = [];
-    var promise = await firebase.database().ref("chats/").once('value').then(function (snapshot) {
-        for (const key in snapshot.val()) {
-            console.log("key: ", key);
-            console.log("key as string", key.toString());
-            var keyAsString = key.toString();
-            const chat = snapshot.val()[key];
-            const user1ID = chat["user1ID"].toString().trim();
-            const user2ID = chat["user2ID"].toString().trim();
-            if (user1ID === userID || user2ID === userID) {
-                var Me = userID.toString().trim();
-                var MyContact = userID;
+function addChatInfo(userID, key, chat, chats, setChats, chatIDs, setChatIDs) {
 
-                if (user1ID === userID) {
-                    MyContact = chat["user2ID"];
-                } else {
-                    Me = chat["user2ID"];
-                }
+    const user1ID = chat["user1ID"].toString().trim();
+    const user2ID = chat["user2ID"].toString().trim();
+    if (user1ID === userID || user2ID === userID) {
+        var Me = userID.toString().trim();
+        var MyContact = userID;
 
-                setChats({
-                    ...chats, [key]:
-                        {
-                            "Me": Me,
-                            "MyContact": MyContact,
-                            "timeCreated": chat["timeCreated"],
-                            "read": chat["read"]
-                        }
-                });
-                chatIDs.push(keyAsString); // add chatID to list
-            }
+        if (user1ID === userID) {
+            MyContact = chat["user2ID"];
+        } else {
+            Me = chat["user2ID"];
         }
-    });
 
-    messageDict = {};
-    promise = await firebase.database().ref("messages/").once('value').then(function (snapshot) {
-        for (const key in snapshot.val()) {
-            const message = snapshot.val()[key];
-            const currentChatID = message["chatID"];
-            if (chatIDs.includes(currentChatID)) {
-                if (messageDict[currentChatID]) { // there are messages from this chat exist yet
-                    var value = messageDict[currentChatID]; // get list of messages already saved in dict
-
-                    value.push({
-                        "authorID": message["authorID"],
-                        "content": message["content"],
-                        "read": message["read"],
-                        "timestamp": message["timestamp"]
-                    });
-                    messageDict[currentChatID] = value;
-                } else { // no messages from this chat yet
-                    messageDict[currentChatID] = {
-                        "authorID": message["authorID"],
-                        "content": message["content"],
-                        "read": message["read"],
-                        "timestamp": message["timestamp"]
-                    };
+        setChats({
+            ...chats, [key]:
+                {
+                    "ChatID": key,
+                    "Me": Me,
+                    "MyContact": MyContact,
+                    "timeCreated": chat["timeCreated"],
+                    "read": chat["read"]
                 }
-            }
-        }
-    });
+        });
+        setChatIDs(chatIDs.concat(key.toString()));
+    }
+}
 
-    console.log("messageDict: ", messageDict);
+function addMessageInfo(key, messageID, message, messages, setMessages) {
+    if (messages[key]) { // there are messages from this chat already
+        var value = messages[key]; // get list of messages already saved in dict
 
-    for (const key in messageDict) {
+        value.push({
+            "messageID": messageID,
+            "authorID": message["authorID"],
+            "content": message["content"],
+            "read": message["read"],
+            "timestamp": message["timestamp"]
+        });
         setMessages({
             ...messages, [key]:
-                messageDict[key]
+                value
+        });
+    } else { // no messages from this chat yet
+        setMessages({
+            ...messages, [key]:
+                [{
+                    "messageID": messageID,
+                    "authorID": message["authorID"],
+                    "content": message["content"],
+                    "read": message["read"],
+                    "timestamp": message["timestamp"]
+                }]
         });
     }
 }
@@ -81,36 +66,69 @@ export default function NewMessageScreen() {
     var userId = ""; // user ID
     const [chats, setChats] = useState({});
     const [messages, setMessages] = useState({});
+    const [chatIDs, setChatIDs] = useState([]);
 
     const displayChatInfo = [];
     const displayMessageInfo = [];
+
+    var isPopulated = false;
 
     firebase.auth().onAuthStateChanged(function (user) {
         if (user) {
             // User is signed in.
             userId = user.uid;
 
-            console.log("hello " + userId);
+            //console.log("hello " + userId);
+
+            firebase.database().ref("chats/").once('value').then(function (snapshot) {
+                //testFunc(snapshot.val()["1"], setChats);
+                //setChats(snapshot.val()["1"]);
+                for (const key in snapshot.val()) {
+                    addChatInfo(userId, key, snapshot.val()[key], chats, setChats, chatIDs, setChatIDs);
+                }
+            });
+
+            firebase.database().ref("messages/").once('value').then(function (snapshot) {
+                var numChildren = snapshot.numChildren();
+                console.log("numChildren: ", numChildren);
+                for (key in snapshot.val()) {
+                    //console.log("key: ", key);
+                    //console.log("snapshot val: ", snapshot.val()[key]);
+                    if (numChildren == 0) {
+                        break;
+                    }
+                    if (chatIDs.includes(snapshot.val()[key]["chatID"])) { // if message is in a relevant chat
+                        addMessageInfo(snapshot.val()[key]["chatID"], key, snapshot.val()[key], messages, setMessages);
+                    }
+                    numChildren--;
+                }
+            });
+
+            /* console.log("chats", chats);
+            console.log("messages", messages); */
 
             // get chats
-            getChatsAndMessages(userId, chats, setChats, messages, setMessages);
-
+            /* if (!isPopulated) {
+                getChats(userId, chats, setChats, chatIDs, setChatIDs);
+                getMessages(chatIDs, setChatIDs, messages, setMessages);
+                isPopulated = true;
+            } */
         } else {
             // No user is signed in.
             navigation.navigate("Login");
         }
     });
 
-    //console.log(chats);
-    //console.log(messages);
+    // console.log(chats);
+    // console.log(messages);
     // convert chat and message info to lists
-    for (key in messages) {
+    /* for (key in messages) {
         displayChatInfo.push(chats[key]);
         displayMessageInfo.push(messages[key]);
-    }
+    } */
 
     //console.log("displayChatInfo", displayChatInfo);
-    console.log("displayMsgInfo", displayMessageInfo);
+    //console.log("displayMsgInfo", displayMessageInfo);
 
 
     return (
@@ -119,6 +137,7 @@ export default function NewMessageScreen() {
 
             <FlatList
                 data={displayMessageInfo}
+                keyExtractor={(item) => item.messageID}
                 renderItem={({ item }) => <Item content={item.content}
                 />}
             />
