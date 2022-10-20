@@ -49,7 +49,7 @@
     "react-native-multiple-choice": "0.0.8",
     "react-native-multiple-choice-picker": "^1.0.6",
     "react-native-popup-dialog": "^0.18.3",
-    "react-native-reanimated": "^1.1.0",
+    "react-native-reanimated": "^2.10.0",
     "react-native-safe-area-context": "0.7.3",
     "react-native-screens": "~2.2.0",
     "react-native-tab-view": "^2.14.0",
